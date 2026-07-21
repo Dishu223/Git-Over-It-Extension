@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Git Over It",
+  "version": "1.0.0",
+  "description": "Automatically push your accepted LeetCode solutions to GitHub.",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Open Git Over It"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.github.com/*",
+    "https://leetcode.com/*"
+  ]
+}
