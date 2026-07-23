@@ -5,16 +5,26 @@ import './App.css'
 function App() {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [pushedCount, setPushedCount] = useState(0);
 
   // useEffect runs once when the component first loads!
   useEffect(() => {
     // Check if we already have a token saved in Chrome storage
-    if (chrome && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['github_pat'], (result) => {
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get(['github_pat', 'pushedCount'], (result: { [key: string]: any }) => {
         if (result.github_pat) {
           setToken(result.github_pat);
         }
+        if (result.pushedCount) {
+          setPushedCount(result.pushedCount);
+        }
         setIsLoading(false);
+      });
+
+      chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === 'local' && changes.pushedCount) {
+          setPushedCount(changes.pushedCount.newValue as number);
+        }
       });
     } else {
       // Fallback for local testing outside of extension
@@ -24,7 +34,7 @@ function App() {
 
   const handleSetupComplete = (newToken: string) => {
     // Save it securely in Chrome extension storage
-    if (chrome && chrome.storage && chrome.storage.local) {
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       chrome.storage.local.set({ github_pat: newToken }, () => {
         setToken(newToken);
       });
@@ -79,7 +89,7 @@ function App() {
           </div>
           <div className="stat-box glass-panel">
             <span className="stat-label">Pushed</span>
-            <span className="stat-value">🚀 0</span>
+            <span className="stat-value">🚀 {pushedCount}</span>
           </div>
         </div>
       </main>
