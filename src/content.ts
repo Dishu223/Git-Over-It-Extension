@@ -19,7 +19,7 @@ injectInterceptor();
 // ==============================================================================
 // 2. LISTEN FOR MESSAGES FROM THE INTERCEPTOR
 // ==============================================================================
-window.addEventListener('message', (event) => {
+window.addEventListener('message', async (event) => {
   if (event.source !== window || !event.data) return;
 
   if (event.data.type === 'LEETCODE_SUBMISSION') {
@@ -28,16 +28,60 @@ window.addEventListener('message', (event) => {
     const urlParts = window.location.pathname.split('/');
     const problemName = urlParts[2] || 'unknown-problem';
 
+    console.log("Git Over It: Fetching advanced problem details for", problemName);
+
+    // Advanced Scraper: Fetch the Problem Description, Difficulty, and Tags natively via GraphQL!
+    let difficulty = 'Medium';
+    let tags: string[] = [];
+    let descriptionContent = '';
+
+    try {
+      const query = `
+        query questionData($titleSlug: String!) {
+          question(titleSlug: $titleSlug) {
+            difficulty
+            content
+            topicTags {
+              name
+            }
+          }
+        }
+      `;
+      const res = await fetch('https://leetcode.com/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: query,
+          variables: { titleSlug: problemName }
+        })
+      });
+      
+      const resData = await res.json();
+      const q = resData?.data?.question;
+      if (q) {
+        difficulty = q.difficulty || difficulty;
+        descriptionContent = q.content || '';
+        tags = q.topicTags?.map((t: any) => t.name) || [];
+      }
+    } catch (e) {
+      console.error("Git Over It: Failed to fetch advanced problem details", e);
+    }
+
     const cleanData = {
       problemName: problemName,
       language: submissionData.lang,
       code: submissionData.code,
       runtime: submissionData.status_runtime,
       memory: submissionData.status_memory,
+      difficulty: difficulty,
+      tags: tags,
+      description: descriptionContent,
       timestamp: new Date().toISOString()
     };
 
-    console.log("Git Over It Content Script: Forwarding to Background Worker", cleanData);
+    console.log("Git Over It Content Script: Forwarding rich data to Background Worker", cleanData);
 
     chrome.runtime.sendMessage({
       type: 'SUBMISSION_ACCEPTED',

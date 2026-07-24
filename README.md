@@ -35,5 +35,19 @@ I decided the extension needed to be extremely user-friendly. Today, I added our
 
 ---
 
+## 🧠 Feature 2: The Advanced Scraper
+*(Development Period: July 24)*
+
+Before we can use AI to categorize our solutions, we need more data! The scraper previously only grabbed the raw code and the language. 
+
+Today, I upgraded the Content Script to fire a background GraphQL query to LeetCode's `questionData` endpoint the exact moment you hit submit. Without scraping a single line of fragile HTML, the extension now natively extracts:
+1. **The Full Problem Description** (HTML formatted)
+2. **The Difficulty Level** (Easy, Medium, Hard)
+3. **The Topic Tags** (e.g., Array, Hash Table, Dynamic Programming)
+
+This rich data payload is seamlessly forwarded to the background worker, setting the perfect foundation for our upcoming AI engine!
+
+---
+
 ## 🔜 What's Next?
-Next up, I'll be implementing **Feature 2: The Advanced Scraper**. I need to extract the Problem Description, Difficulty, and Topic Tags directly from LeetCode's GraphQL API so we can pass that rich data to our upcoming AI Rules Engine!
+Next up is the big one: **Feature 3 (The AI Rules Engine)**! I'll be integrating a mock Backend Proxy to securely route this rich problem data to Gemini. The AI will calculate Time/Space complexity, generate a revision guide, and write our Markdown README!
