@@ -11,12 +11,14 @@ function App() {
   // Settings state
   const [showPopup, setShowPopup] = useState(true);
   const [folderStructure, setFolderStructure] = useState('flat');
+  const [repoName, setRepoName] = useState('Git-Over-It');
+  const [theme, setTheme] = useState('dark');
 
   // useEffect runs once when the component first loads!
   useEffect(() => {
     // Check if we already have a token saved in Chrome storage
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['github_pat', 'pushedCount', 'showPopup', 'folderStructure'], (result: { [key: string]: any }) => {
+      chrome.storage.local.get(['github_pat', 'pushedCount', 'showPopup', 'folderStructure', 'github_repo', 'theme'], (result: { [key: string]: any }) => {
         if (result.github_pat) {
           setToken(result.github_pat);
         }
@@ -28,6 +30,12 @@ function App() {
         }
         if (result.folderStructure) {
           setFolderStructure(result.folderStructure);
+        }
+        if (result.github_repo) {
+          setRepoName(result.github_repo);
+        }
+        if (result.theme) {
+          setTheme(result.theme);
         }
         setIsLoading(false);
       });
@@ -72,6 +80,18 @@ function App() {
     saveSetting('folderStructure', newValue);
   };
 
+  const changeRepoName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setRepoName(newValue);
+    saveSetting('github_repo', newValue);
+  };
+
+  const changeTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = e.target.value;
+    setTheme(newValue);
+    saveSetting('theme', newValue);
+  };
+
   if (isLoading) {
     return <div className="app-container">Loading...</div>;
   }
@@ -94,16 +114,14 @@ function App() {
   }
 
   return (
-    <div className="app-container">
-      <header className="app-header glass-panel">
-        <div className="logo-container">
-          <svg className="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-          </svg>
-          <h1>Git Over It</h1>
+    <div className={`app-container theme-${theme}`}>
+      <div className="app-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #30363d' }}>
+        <h1 className="app-title" style={{ fontSize: '18px', margin: 0 }}>Git Over It</h1>
+        <div className="status-indicator">
+          <div className="glow-dot"></div>
+          <span>In Sync</span>
         </div>
-        <p className="subtitle">LeetCode to GitHub Sync</p>
-      </header>
+      </div>
 
       <nav className="app-nav">
         <button 
@@ -156,14 +174,39 @@ function App() {
 
             <div className="setting-item">
               <div className="setting-info">
+                <label>Theme</label>
+                <p>Customize the extension UI aesthetics.</p>
+              </div>
+              <select className="setting-select" value={theme} onChange={changeTheme}>
+                <option value="dark">Dark Mode (Premium)</option>
+                <option value="cute">Cute (Pastel)</option>
+              </select>
+            </div>
+
+            <div className="setting-item">
+              <div className="setting-info">
+                <label>Target Repository</label>
+                <p>The GitHub repository to push your solutions into.</p>
+              </div>
+              <input 
+                type="text" 
+                style={{ padding: '6px', borderRadius: '6px', border: '1px solid #444', background: '#2a2a2a', color: '#fff', fontSize: '13px', width: '130px', outline: 'none' }} 
+                value={repoName} 
+                onChange={changeRepoName} 
+                placeholder="Git-Over-It" 
+              />
+            </div>
+
+            <div className="setting-item">
+              <div className="setting-info">
                 <label>Folder Organization</label>
                 <p>How your GitHub repository should be structured.</p>
               </div>
               <select className="setting-select" value={folderStructure} onChange={changeFolderStructure}>
-                <option value="flat">Flat (solutions/)</option>
-                <option value="difficulty">By Difficulty (Medium/..)</option>
-                <option value="language">By Language (cpp/..)</option>
-                <option value="datastructure">By Topic (Arrays/..)</option>
+                <option value="template_a">Template A: Topic/Difficulty/Problem</option>
+                <option value="template_b">Template B: Language/Difficulty/Problem</option>
+                <option value="template_c">Template C: Difficulty/Problem</option>
+                <option value="flat">Flat: Problem</option>
               </select>
             </div>
             {folderStructure !== 'flat' && (

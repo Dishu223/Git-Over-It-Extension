@@ -31,7 +31,57 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width: 400px; /* Standard extension popup width */
+}
+
+.app-container {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  background-color: #0d1117;
+  color: #c9d1d9;
+  transition: all 0.3s ease;
+}
+
+/* --- Theme: Cute --- */
+.theme-cute {
+  background-color: #fff0f5; /* LavenderBlush */
+  color: #5d4037;
+}
+.theme-cute .app-header {
+  border-bottom: 1px solid #ffd1dc;
+  background: linear-gradient(135deg, #ffb6c1, #ffc0cb);
+}
+.theme-cute .app-title {
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+.theme-cute .setting-item {
+  border-bottom: 1px solid #ffe4e1;
+}
+.theme-cute .setting-select, .theme-cute .setting-input {
+  background-color: #fff;
+  color: #5d4037;
+  border: 1px solid #ffb6c1;
+}
+.theme-cute .setting-select option {
+  background-color: #fff;
+  color: #5d4037;
+}
+.theme-cute .setting-instructions {
+  background-color: #ffe4e1;
+  border: 1px dashed #ffb6c1;
+  color: #8b4513;
+}
+.theme-cute .setting-instructions h3 {
+  color: #ff69b4;
+}
+.theme-cute .footer {
+  border-top: 1px solid #ffd1dc;
+  color: #a0522d;
+}
+
+/* --- Base Dark Theme Components --- */
+.app-header {
   min-height: 500px;
   overflow-x: hidden;
 }
@@ -49,6 +99,83 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-glass);
+}
+
+.setting-select {
+  width: 100%;
+  padding: 8px;
+  background-color: #21262d;
+  color: #c9d1d9;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.setting-select:hover {
+  border-color: #8b949e;
+}
+
+.setting-select option {
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+.setting-input {
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.setting-input:hover {
+  border-color: #8b949e;
+}
+
+/* --- Status Indicator & Animations --- */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #2ea043;
+  padding: 3px 8px;
+  background: rgba(46, 160, 67, 0.1);
+  border-radius: 12px;
+  margin-left: auto;
+  border: 1px solid rgba(46, 160, 67, 0.2);
+}
+.theme-cute .status-indicator {
+  color: #ff69b4;
+  background: rgba(255, 105, 180, 0.1);
+  border: 1px solid rgba(255, 105, 180, 0.2);
+}
+
+.glow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #2ea043;
+  box-shadow: 0 0 5px #2ea043, 0 0 10px #2ea043;
+  animation: pulse 1.5s infinite alternate;
+}
+.theme-cute .glow-dot {
+  background-color: #ff69b4;
+  box-shadow: 0 0 5px #ff69b4, 0 0 10px #ff69b4;
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.6;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.setting-instructions {
+  transition: all 0.2s ease;
 }
 
 button {

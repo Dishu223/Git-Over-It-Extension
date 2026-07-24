@@ -120,9 +120,10 @@ ${payload.description || 'Description not available.'}
 async function pushToGitHub(payload: any, tabId?: number) {
   try {
     // A) Get the PAT stored securely in Chrome Storage
-    const data = await chrome.storage.local.get(['github_pat', 'folderStructure']);
+    const data = await chrome.storage.local.get(['github_pat', 'folderStructure', 'github_repo']);
     const token = data.github_pat;
     const folderStructure = data.folderStructure || 'flat';
+    const repoName = data.github_repo || 'Git-Over-It';
 
     if (!token) {
       console.error("Git Over It: No GitHub Token found! Cannot push.");
@@ -138,18 +139,23 @@ async function pushToGitHub(payload: any, tabId?: number) {
 
     // C) Format the folder structure. 
     // We dynamically route based on user settings!
+    const difficulty = payload.difficulty || 'Medium';
+    const firstTag = payload.tags?.[0]?.replace(/\s+/g, '') || 'Uncategorized';
+    
     let folderPrefix = '';
-    if (folderStructure === 'language') {
-      folderPrefix = `${payload.language}/`;
-    } else if (folderStructure === 'difficulty') {
-      folderPrefix = `${payload.difficulty || 'Medium'}/`;
-    } else if (folderStructure === 'datastructure') {
-      const firstTag = payload.tags?.[0]?.replace(/\s+/g, '') || 'Uncategorized';
-      folderPrefix = `${firstTag}/`;
+    if (folderStructure === 'template_a') {
+      folderPrefix = `LeetCode/${firstTag}/${difficulty}/`;
+    } else if (folderStructure === 'template_b') {
+      folderPrefix = `LeetCode/${payload.language}/${difficulty}/`;
+    } else if (folderStructure === 'template_c') {
+      folderPrefix = `LeetCode/${difficulty}/`;
+    } else if (folderStructure !== 'flat') {
+      // Fallback for older flat options if any
+      folderPrefix = 'solutions/';
     }
 
     const extension = getFileExtension(payload.language);
-    const problemFolder = `solutions/${folderPrefix}${payload.problemName}`;
+    const problemFolder = `${folderPrefix}${payload.problemName}`;
     const codeFilePath = `${problemFolder}/solution.${extension}`;
     const readmeFilePath = `${problemFolder}/README.md`;
 
@@ -168,10 +174,9 @@ async function pushToGitHub(payload: any, tabId?: number) {
     let allSuccess = true;
 
     for (const file of filesToPush) {
-      // Check if the file already exists to get its SHA (required for overwriting)
       let fileSha: string | undefined;
       try {
-        const getRes = await fetch(`https://api.github.com/repos/${username}/Git-Over-It/contents/${file.path}`, {
+        const getRes = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${file.path}`, {
           headers: { Authorization: `token ${token}` }
         });
         if (getRes.ok) {
@@ -189,7 +194,7 @@ async function pushToGitHub(payload: any, tabId?: number) {
       if (fileSha) body.sha = fileSha;
 
       // E) Send the PUT request to create or update the file
-      const pushRes = await fetch(`https://api.github.com/repos/${username}/Git-Over-It/contents/${file.path}`, {
+      const pushRes = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${file.path}`, {
         method: 'PUT',
         headers: {
           Authorization: `token ${token}`,
