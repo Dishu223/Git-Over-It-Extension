@@ -23,3 +23,8 @@ This document serves as the master list of all features we planned to implement,
   4. Spaced repetition revision dates dynamically calculated.
   5. Any additional info parsed from the user's comments in the code.
 - **Extremely User-Friendly UI**: Detailed instructions inside the extension popup explaining all features and capabilities.
+
+## 🔮 Phase 5+: Future Monetization & Gamification (Backlog)
+- **Daily Reminders System:** Use `chrome.alarms` and `chrome.notifications` to send users a desktop push notification if they haven't maintained their streak by a certain time (e.g., 8:00 PM).
+- **Gamification & Credits:** Introduce a virtual economy where users earn credits by maintaining coding streaks, solving daily challenge problems, or optionally viewing ads.
+- **Unlockable Cosmetics Store:** Users can spend their credits to buy custom UI themes for the extension, premium AI README templates, and algorithm cheat sheets!

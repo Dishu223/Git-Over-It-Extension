@@ -120,8 +120,9 @@ ${payload.description || 'Description not available.'}
 async function pushToGitHub(payload: any, tabId?: number) {
   try {
     // A) Get the PAT stored securely in Chrome Storage
-    const data = await chrome.storage.local.get(['github_pat']);
+    const data = await chrome.storage.local.get(['github_pat', 'folderStructure']);
     const token = data.github_pat;
+    const folderStructure = data.folderStructure || 'flat';
 
     if (!token) {
       console.error("Git Over It: No GitHub Token found! Cannot push.");
@@ -136,9 +137,19 @@ async function pushToGitHub(payload: any, tabId?: number) {
     const username = userData.login;
 
     // C) Format the folder structure. 
-    // We now create a dedicated folder for each problem!
+    // We dynamically route based on user settings!
+    let folderPrefix = '';
+    if (folderStructure === 'language') {
+      folderPrefix = `${payload.language}/`;
+    } else if (folderStructure === 'difficulty') {
+      folderPrefix = `${payload.difficulty || 'Medium'}/`;
+    } else if (folderStructure === 'datastructure') {
+      const firstTag = payload.tags?.[0]?.replace(/\s+/g, '') || 'Uncategorized';
+      folderPrefix = `${firstTag}/`;
+    }
+
     const extension = getFileExtension(payload.language);
-    const problemFolder = `solutions/${payload.problemName}`;
+    const problemFolder = `solutions/${folderPrefix}${payload.problemName}`;
     const codeFilePath = `${problemFolder}/solution.${extension}`;
     const readmeFilePath = `${problemFolder}/README.md`;
 

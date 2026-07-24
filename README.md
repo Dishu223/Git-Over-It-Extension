@@ -60,5 +60,18 @@ Now, when you push a solution, it actually creates a dedicated folder for that p
 
 ---
 
+## 📁 Feature 4: Dynamic Folder Organization UI
+*(Development Period: July 25)*
+
+I wanted full control over how my GitHub repository was structured, so I brought back the Folder Organization setting in the UI! You can now choose how the extension routes your solutions:
+* **Flat:** `solutions/two-sum`
+* **By Difficulty:** `solutions/Medium/two-sum`
+* **By Language:** `solutions/cpp/two-sum`
+* **By Topic:** `solutions/Array/two-sum`
+
+The background script dynamically reads your preference from Chrome Local Storage and constructs the exact GitHub API path on the fly before pushing!
+
+---
+
 ## 🔜 What's Next?
-Next up is **Feature 4: Dynamic Folder Organization UI**. We will wire up the Settings tab so the AI proxy can sort solutions into folders by Difficulty, Language, or Data Structure instead of just the problem name!
+Next up is **Phase 5: The Daily Streak Widget!** I want to add a GitHub-style contribution graph directly inside the extension popup so I can visualize my consistency.

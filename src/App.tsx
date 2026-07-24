@@ -10,12 +10,13 @@ function App() {
   
   // Settings state
   const [showPopup, setShowPopup] = useState(true);
+  const [folderStructure, setFolderStructure] = useState('flat');
 
   // useEffect runs once when the component first loads!
   useEffect(() => {
     // Check if we already have a token saved in Chrome storage
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['github_pat', 'pushedCount', 'showPopup'], (result: { [key: string]: any }) => {
+      chrome.storage.local.get(['github_pat', 'pushedCount', 'showPopup', 'folderStructure'], (result: { [key: string]: any }) => {
         if (result.github_pat) {
           setToken(result.github_pat);
         }
@@ -24,6 +25,9 @@ function App() {
         }
         if (result.showPopup !== undefined) {
           setShowPopup(result.showPopup);
+        }
+        if (result.folderStructure) {
+          setFolderStructure(result.folderStructure);
         }
         setIsLoading(false);
       });
@@ -60,6 +64,12 @@ function App() {
     const newValue = !showPopup;
     setShowPopup(newValue);
     saveSetting('showPopup', newValue);
+  };
+
+  const changeFolderStructure = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = e.target.value;
+    setFolderStructure(newValue);
+    saveSetting('folderStructure', newValue);
   };
 
   if (isLoading) {
@@ -143,6 +153,24 @@ function App() {
                 <span className="slider round"></span>
               </label>
             </div>
+
+            <div className="setting-item">
+              <div className="setting-info">
+                <label>Folder Organization</label>
+                <p>How your GitHub repository should be structured.</p>
+              </div>
+              <select className="setting-select" value={folderStructure} onChange={changeFolderStructure}>
+                <option value="flat">Flat (solutions/)</option>
+                <option value="difficulty">By Difficulty (Medium/..)</option>
+                <option value="language">By Language (cpp/..)</option>
+                <option value="datastructure">By Topic (Arrays/..)</option>
+              </select>
+            </div>
+            {folderStructure !== 'flat' && (
+              <p style={{ fontSize: '11px', color: '#ff9800', marginTop: '-8px', marginBottom: '16px', lineHeight: '1.4' }}>
+                ⚠️ <strong>Note:</strong> Changing this will only affect <em>future</em> pushes. Existing folders on GitHub won't be moved automatically! We recommend picking one style and sticking to it.
+              </p>
+            )}
 
             <div className="setting-instructions">
               <h3>How it works</h3>
