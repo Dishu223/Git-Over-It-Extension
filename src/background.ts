@@ -35,7 +35,7 @@ chrome.runtime.onMessage.addListener((message: any, _sender: chrome.runtime.Mess
     console.log("Git Over It: Background Worker received submission!", message.payload);
     
     // We run the async push process in the background without blocking the browser.
-    pushToGitHub(message.payload);
+    pushToGitHub(message.payload, _sender.tab?.id);
     
     // Immediately tell the scraper we received it.
     sendResponse({ status: "processing" });
@@ -46,7 +46,7 @@ chrome.runtime.onMessage.addListener((message: any, _sender: chrome.runtime.Mess
 // ==============================================================================
 // 4. THE PUSHER (THE ENGINE)
 // ==============================================================================
-async function pushToGitHub(payload: any) {
+async function pushToGitHub(payload: any, tabId?: number) {
   try {
     // A) Get the PAT stored securely in Chrome Storage
     const data = await chrome.storage.local.get(['github_pat']);
@@ -115,6 +115,11 @@ async function pushToGitHub(payload: any) {
       const stats = await chrome.storage.local.get(['pushedCount']);
       const count = ((stats.pushedCount as number) || 0) + 1;
       await chrome.storage.local.set({ pushedCount: count });
+
+      // Notify the content script so it can show the LeetCode toast popup!
+      if (tabId) {
+        chrome.tabs.sendMessage(tabId, { type: 'PUSH_SUCCESS', problem: payload.problemName });
+      }
     } else {
       const err = await pushRes.json();
       console.error("Git Over It: Push failed", err);

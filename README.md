@@ -25,5 +25,15 @@ When I tested pushing code to GitHub, the very first push succeeded, but subsequ
 
 ---
 
+## 🛠️ Feature 1: Extension Settings UI & Toast Notifications
+*(Development Period: July 24)*
+
+I decided the extension needed to be extremely user-friendly. Today, I added our first major Quality of Life features!
+
+* **The Settings Tab ⚙️:** I built a sleek navigation system in the extension popup. These preferences are securely cached in Chrome Local Storage.
+* **The Success Toast 🍞:** Instead of forcing the user to open the extension popup to verify if a push succeeded, the Service Worker now sends a success signal back to the active LeetCode tab. The Content Script listens for this and injects a beautifully animated green Toast Notification into the bottom right corner of the screen! (There's also a toggle in the Settings to turn this off if you prefer silence).
+
+---
+
 ## 🔜 What's Next?
-Next up, I'll be implementing **Feature 1**, focusing on the User Interface. I want to add a Settings tab to configure custom folder routing and a Toast Notification so I know when my code is pushed successfully!
+Next up, I'll be implementing **Feature 2: The Advanced Scraper**. I need to extract the Problem Description, Difficulty, and Topic Tags directly from LeetCode's GraphQL API so we can pass that rich data to our upcoming AI Rules Engine!

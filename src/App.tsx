@@ -6,17 +6,24 @@ function App() {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pushedCount, setPushedCount] = useState(0);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'settings'>('dashboard');
+  
+  // Settings state
+  const [showPopup, setShowPopup] = useState(true);
 
   // useEffect runs once when the component first loads!
   useEffect(() => {
     // Check if we already have a token saved in Chrome storage
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['github_pat', 'pushedCount'], (result: { [key: string]: any }) => {
+      chrome.storage.local.get(['github_pat', 'pushedCount', 'showPopup'], (result: { [key: string]: any }) => {
         if (result.github_pat) {
           setToken(result.github_pat);
         }
         if (result.pushedCount) {
           setPushedCount(result.pushedCount);
+        }
+        if (result.showPopup !== undefined) {
+          setShowPopup(result.showPopup);
         }
         setIsLoading(false);
       });
@@ -41,6 +48,18 @@ function App() {
     } else {
       setToken(newToken);
     }
+  };
+
+  const saveSetting = (key: string, value: any) => {
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.set({ [key]: value });
+    }
+  };
+
+  const togglePopup = () => {
+    const newValue = !showPopup;
+    setShowPopup(newValue);
+    saveSetting('showPopup', newValue);
   };
 
   if (isLoading) {
@@ -76,26 +95,67 @@ function App() {
         <p className="subtitle">LeetCode to GitHub Sync</p>
       </header>
 
-      <main className="app-main">
-        <div className="status-card glass-panel">
-          <h2>Ready to Sync</h2>
-          <p>Solve a problem on LeetCode and we'll automatically push it to your repository.</p>
-        </div>
+      <nav className="app-nav">
+        <button 
+          className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
+          onClick={() => setActiveTab('dashboard')}
+        >
+          Dashboard
+        </button>
+        <button 
+          className={`nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
+          onClick={() => setActiveTab('settings')}
+        >
+          Settings ⚙️
+        </button>
+      </nav>
 
-        <div className="stats-grid">
-          <div className="stat-box glass-panel">
-            <span className="stat-label">Streak</span>
-            <span className="stat-value">🔥 0</span>
+      <main className="app-main">
+        {activeTab === 'dashboard' ? (
+          <>
+            <div className="status-card glass-panel">
+              <h2>Ready to Sync</h2>
+              <p>Solve a problem on LeetCode and we'll automatically push it to your repository.</p>
+            </div>
+
+            <div className="stats-grid">
+              <div className="stat-box glass-panel">
+                <span className="stat-label">Streak</span>
+                <span className="stat-value">🔥 0</span>
+              </div>
+              <div className="stat-box glass-panel">
+                <span className="stat-label">Pushed</span>
+                <span className="stat-value">🚀 {pushedCount}</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="settings-panel glass-panel">
+            <h2>Preferences</h2>
+            
+            <div className="setting-item">
+              <div className="setting-info">
+                <label>Success Popup</label>
+                <p>Show a notification on LeetCode when push succeeds.</p>
+              </div>
+              <label className="switch">
+                <input type="checkbox" checked={showPopup} onChange={togglePopup} />
+                <span className="slider round"></span>
+              </label>
+            </div>
+
+            <div className="setting-instructions">
+              <h3>How it works</h3>
+              <p>1. Solve any problem on LeetCode.</p>
+              <p>2. Get an "Accepted" verdict.</p>
+              <p>3. Git Over It automatically pushes the code!</p>
+            </div>
           </div>
-          <div className="stat-box glass-panel">
-            <span className="stat-label">Pushed</span>
-            <span className="stat-value">🚀 {pushedCount}</span>
-          </div>
-        </div>
+        )}
       </main>
 
       <footer className="app-footer">
-        <p>Waiting for LeetCode submissions...</p>
+        <p>{activeTab === 'dashboard' ? 'Waiting for LeetCode submissions...' : 'Git Over It v1.0.0'}</p>
       </footer>
     </div>
   )
