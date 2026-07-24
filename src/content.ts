@@ -1,5 +1,24 @@
 // @ts-ignore
 import injectUrl from './inject.ts?script'
+import confetti from 'canvas-confetti';
+
+export const playPopSound = () => {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.1);
+  } catch(e) {}
+};
+
 
 // ==============================================================================
 // 1. INJECT THE SCRIPT VIA SRC TO BYPASS CSP
@@ -104,11 +123,23 @@ window.addEventListener('message', async (event) => {
 // ==============================================================================
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === 'PUSH_SUCCESS') {
-    chrome.storage.local.get(['showPopup', 'theme'], (result: { [key: string]: any }) => {
+    chrome.storage.local.get(['showPopup', 'theme', 'soundEnabled'], (result: { [key: string]: any }) => {
       // Default to true if not set
       if (result.showPopup !== false) {
         showSuccessToast(message.problem, (result.theme as string) || 'dark');
       }
+      
+      if (result.soundEnabled !== false) {
+        playPopSound();
+      }
+      
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { x: 0.9, y: 0.8 },
+        colors: ['#2ecc71', '#3498db', '#e74c3c', '#f1c40f', '#ff69b4'],
+        zIndex: 2147483647
+      });
     });
   }
 });
