@@ -47,10 +47,19 @@ window.addEventListener('message', async (event) => {
           }
         }
       `;
+      
+      const getCookie = (name: string) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(';').shift();
+        return '';
+      };
+      
       const res = await fetch('https://leetcode.com/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-csrftoken': getCookie('csrftoken') || ''
         },
         body: JSON.stringify({
           query: query,

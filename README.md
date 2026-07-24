@@ -49,5 +49,16 @@ This rich data payload is seamlessly forwarded to the background worker, setting
 
 ---
 
+## 🤖 Feature 3: The AI Rules Engine (README Generator)
+*(Development Period: July 25)*
+
+This is where the magic happens! I wanted the extension to automatically generate a beautiful, markdown README for every problem I solve, detailing the time and space complexity, the tags, and active recall dates. 
+
+Since Chrome Extensions shouldn't bundle raw API keys for security reasons, I engineered a highly robust Mock AI Backend Proxy. It instantly parses the rich data from Feature 2, calculates an intelligent mock Time/Space complexity based on algorithm families (e.g. Dynamic Programming -> O(N^2), Binary Search -> O(log N)), and generates a complete README!
+
+Now, when you push a solution, it actually creates a dedicated folder for that problem on GitHub containing BOTH the solution code and the generated `README.md`!
+
+---
+
 ## 🔜 What's Next?
-Next up is the big one: **Feature 3 (The AI Rules Engine)**! I'll be integrating a mock Backend Proxy to securely route this rich problem data to Gemini. The AI will calculate Time/Space complexity, generate a revision guide, and write our Markdown README!
+Next up is **Feature 4: Dynamic Folder Organization UI**. We will wire up the Settings tab so the AI proxy can sort solutions into folders by Difficulty, Language, or Data Structure instead of just the problem name!

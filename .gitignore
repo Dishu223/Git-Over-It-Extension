@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Sensitive files
+instructions_to_follow_for_project_development.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

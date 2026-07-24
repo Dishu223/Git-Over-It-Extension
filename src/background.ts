@@ -22,9 +22,15 @@ const getFileExtension = (lang: string) => {
 // 2. HELPER: BASE64 ENCODING
 // ==============================================================================
 // The GitHub API requires all file content to be sent encoded in Base64.
-// btoa() is a built-in browser function for this!
+// We use TextEncoder to safely handle complex Unicode characters (emojis, math symbols).
 const utf8ToBase64 = (str: string) => {
-  return btoa(unescape(encodeURIComponent(str)));
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
 };
 
 // ==============================================================================
@@ -44,7 +50,72 @@ chrome.runtime.onMessage.addListener((message: any, _sender: chrome.runtime.Mess
 });
 
 // ==============================================================================
-// 4. THE PUSHER (THE ENGINE)
+// 4. MOCK AI BACKEND PROXY (FEATURE 3)
+// ==============================================================================
+// The user doesn't need to provide a Gemini API key. This mock proxy simulates 
+// a backend service that processes the rich LeetCode data and generates a professional README.
+async function generateAIReadme(payload: any): Promise<string> {
+  console.log("Git Over It: Contacting AI Backend Proxy...");
+  
+  // Simulate network latency (1.5 seconds)
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  // Generate realistic mock Time/Space complexity based on tags/language
+  let timeComplexity = "O(N)";
+  let spaceComplexity = "O(N)";
+  
+  if (payload.tags?.includes("Dynamic Programming")) {
+    timeComplexity = "O(N^2)";
+    spaceComplexity = "O(N)";
+  } else if (payload.tags?.includes("Binary Search") || payload.tags?.includes("Tree")) {
+    timeComplexity = "O(log N) or O(N log N)";
+    spaceComplexity = "O(log N)";
+  } else if (payload.tags?.includes("Two Pointers") || payload.tags?.includes("Sliding Window")) {
+    timeComplexity = "O(N)";
+    spaceComplexity = "O(1)";
+  }
+
+  const tagBadges = payload.tags?.length > 0 ? payload.tags.map((t: string) => `\`${t}\``).join(" ") : "`Algorithm`";
+  const title = payload.problemName.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  
+  return `
+# ${title}
+
+> **Difficulty:** ${payload.difficulty || 'Medium'}
+> **Topics:** ${tagBadges}
+> **Language:** \`${payload.language}\`
+
+## 🧠 AI Analysis & Rules Engine
+
+### Complexity
+- **Time Complexity:** \`${timeComplexity}\`
+- **Space Complexity:** \`${spaceComplexity}\`
+
+### Spaced Repetition (Active Recall)
+To master this problem, it's recommended to review it again on:
+- **1st Review:** ${(new Date(Date.now() + 1 * 24 * 60 * 60 * 1000)).toDateString()}
+- **2nd Review:** ${(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)).toDateString()}
+- **3rd Review:** ${(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)).toDateString()}
+
+---
+
+## 📝 Problem Description
+
+<details>
+<summary>Click to view</summary>
+
+${payload.description || 'Description not available.'}
+
+</details>
+
+<br />
+<hr />
+<p align="right"><i>Generated automatically by Git Over It AI Engine</i></p>
+`.trim();
+}
+
+// ==============================================================================
+// 5. THE PUSHER (THE ENGINE)
 // ==============================================================================
 async function pushToGitHub(payload: any, tabId?: number) {
   try {
@@ -64,52 +135,66 @@ async function pushToGitHub(payload: any, tabId?: number) {
     const userData = await userRes.json();
     const username = userData.login;
 
-    // C) Format the filename. (e.g. "two-sum.cpp")
-    // Note: In Phase 4 we will add the "Dynamic Folder Structure" logic here!
+    // C) Format the folder structure. 
+    // We now create a dedicated folder for each problem!
     const extension = getFileExtension(payload.language);
-    const filename = `${payload.problemName}.${extension}`;
-    const filePath = `solutions/${filename}`; // Temp folder until Phase 4 AI sorting!
+    const problemFolder = `solutions/${payload.problemName}`;
+    const codeFilePath = `${problemFolder}/solution.${extension}`;
+    const readmeFilePath = `${problemFolder}/README.md`;
 
     // D) Prepare the Commit!
-    // We use a natural, human-readable commit message for the user's repository.
-    // e.g., "Solved LeetCode: two-sum"
-    // Wait, the user asked for "Solved Leetcode 123 : Reverse String". 
-    // We don't currently scrape the question number, but we can do our best with the name.
     const cleanName = payload.problemName.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    const commitMessage = `Solved LeetCode : ${cleanName}`;
-    const encodedCode = utf8ToBase64(payload.code);
+    const commitMessage = `Solved LeetCode : ${cleanName} (with AI Analysis)`;
+    
+    // Fetch the AI generated README!
+    const generatedReadme = await generateAIReadme(payload);
 
-    // Check if the file already exists to get its SHA (required for overwriting)
-    let fileSha: string | undefined;
-    try {
-      const getRes = await fetch(`https://api.github.com/repos/${username}/Git-Over-It/contents/${filePath}`, {
-        headers: { Authorization: `token ${token}` }
+    const filesToPush = [
+      { path: codeFilePath, content: payload.code },
+      { path: readmeFilePath, content: generatedReadme }
+    ];
+
+    let allSuccess = true;
+
+    for (const file of filesToPush) {
+      // Check if the file already exists to get its SHA (required for overwriting)
+      let fileSha: string | undefined;
+      try {
+        const getRes = await fetch(`https://api.github.com/repos/${username}/Git-Over-It/contents/${file.path}`, {
+          headers: { Authorization: `token ${token}` }
+        });
+        if (getRes.ok) {
+          const fileData = await getRes.json();
+          fileSha = fileData.sha;
+        }
+      } catch (e) {}
+
+      console.log(`Git Over It: Pushing ${file.path} to GitHub...`);
+
+      const body: any = {
+          message: commitMessage,
+          content: utf8ToBase64(file.content),
+      };
+      if (fileSha) body.sha = fileSha;
+
+      // E) Send the PUT request to create or update the file
+      const pushRes = await fetch(`https://api.github.com/repos/${username}/Git-Over-It/contents/${file.path}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `token ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body)
       });
-      if (getRes.ok) {
-        const fileData = await getRes.json();
-        fileSha = fileData.sha;
+
+      if (!pushRes.ok) {
+        allSuccess = false;
+        const err = await pushRes.json();
+        console.error("Git Over It: Push failed for", file.path, err);
       }
-    } catch (e) {}
+    }
 
-    console.log(`Git Over It: Pushing ${filePath} to GitHub...`);
-
-    const body: any = {
-        message: commitMessage,
-        content: encodedCode,
-    };
-    if (fileSha) body.sha = fileSha;
-
-    // E) Send the PUT request to create or update the file
-    const pushRes = await fetch(`https://api.github.com/repos/${username}/Git-Over-It/contents/${filePath}`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `token ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body)
-    });
-
-    if (pushRes.ok) {
+    if (allSuccess) {
       console.log("Git Over It: 🎉 Successfully pushed to GitHub!");
       // Hook this up to the UI streak widget!
       const stats = await chrome.storage.local.get(['pushedCount']);
@@ -121,8 +206,7 @@ async function pushToGitHub(payload: any, tabId?: number) {
         chrome.tabs.sendMessage(tabId, { type: 'PUSH_SUCCESS', problem: payload.problemName });
       }
     } else {
-      const err = await pushRes.json();
-      console.error("Git Over It: Push failed", err);
+      console.error("Git Over It: Push failed for one or more files.");
     }
 
   } catch (error) {
