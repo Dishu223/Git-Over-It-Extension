@@ -16,6 +16,10 @@
   
   --shadow-glass: 0 4px 30px rgba(0, 0, 0, 0.5);
   --radius: 12px;
+  
+  --warning-text: #e67e22;
+  --warning-bg: rgba(230, 126, 34, 0.1);
+  --warning-border: rgba(230, 126, 34, 0.2);
 }
 
 * {
@@ -44,64 +48,41 @@ body {
   transition: all 0.3s ease;
 }
 
-/* --- Theme: Cute --- */
-.theme-cute {
-  background-color: #fff0f5; /* LavenderBlush */
-  color: #5d4037;
+/* --- Theme: Cute (Premium Frost Glass) --- */
+body.theme-cute {
+  --bg: #fff0f5;
+  --bg-hover: #ffe4eb;
+  --text: #5d4037;
+  --text-muted: #886d65;
+  --border: rgba(255, 182, 193, 0.4);
+  --glass-bg: linear-gradient(135deg, rgba(255, 240, 245, 0.7) 0%, rgba(255, 228, 235, 0.6) 100%);
+  --shadow-glass: 0 8px 32px 0 rgba(255, 182, 193, 0.15);
+  --cta: #ff69b4;
+  --cta-hover: #ff1493;
+  --warning-text: #c2185b;
+  --warning-bg: rgba(194, 24, 91, 0.1);
+  --warning-border: rgba(194, 24, 91, 0.2);
 }
-.theme-cute .app-header {
-  border-bottom: 1px solid #ffd1dc;
-  background: linear-gradient(135deg, #ffb6c1, #ffc0cb);
+
+body.theme-cute .app-title {
+  color: #c2185b;
+  font-weight: 700;
+  text-shadow: none;
 }
-.theme-cute .app-title {
-  color: #fff;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+
+body.theme-cute h1, body.theme-cute h2, body.theme-cute h3, body.theme-cute h4, body.theme-cute h5, body.theme-cute h6 {
+  color: #c2185b;
 }
-.theme-cute .setting-item {
-  border-bottom: 1px solid #ffe4e1;
+
+body.theme-cute .nav-btn.active {
+  color: #c2185b;
+  border-bottom: 2px solid #c2185b;
 }
-.theme-cute .setting-select, .theme-cute .setting-input {
-  background-color: #fff;
-  color: #5d4037;
-  border: 1px solid #ffb6c1;
-}
-.theme-cute .setting-select option {
-  background-color: #fff;
-  color: #5d4037;
-}
-.theme-cute .setting-instructions {
-  background-color: #ffe4e1;
-  border: 1px dashed #ffb6c1;
-  color: #8b4513;
-}
-.theme-cute .setting-instructions h3 {
-  color: #ff69b4;
-}
-.theme-cute .footer {
-  border-top: 1px solid #ffd1dc;
-  color: #a0522d;
-}
-.theme-cute .glass-panel {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid #ffd1dc;
-  box-shadow: 0 4px 30px rgba(255, 182, 193, 0.3);
-  color: #5d4037;
-}
-.theme-cute h1, .theme-cute h2, .theme-cute h3, .theme-cute h4, .theme-cute h5, .theme-cute h6 {
-  color: #ff69b4;
-}
-.theme-cute p {
-  color: #8b4513;
-}
-.theme-cute .app-nav {
-  border-bottom: 1px solid #ffd1dc;
-}
-.theme-cute .nav-btn {
-  color: #a0522d;
-}
-.theme-cute .nav-btn.active {
-  color: #ff69b4;
-  border-bottom: 2px solid #ff69b4;
+
+body.theme-cute input, body.theme-cute select {
+  background-color: rgba(255, 240, 245, 0.8) !important;
+  color: #5d4037 !important;
+  border: 1px solid rgba(255, 182, 193, 0.4) !important;
 }
 
 /* --- Base Dark Theme Components --- */
@@ -269,18 +250,21 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   background-color: var(--text-muted);
   border-radius: 50%;
-  opacity: 0.2;
-  animation: float 15s infinite linear;
+  opacity: 0;
+  animation: float 25s infinite linear, twinkle 6s infinite ease-in-out;
 }
 .theme-cute .particle {
-  background-color: #ff69b4;
+  background-color: #d88998;
 }
 
 @keyframes float {
-  0% { transform: translateY(0px) translateX(0px); opacity: 0; }
-  10% { opacity: 0.4; }
-  90% { opacity: 0.4; }
-  100% { transform: translateY(-100px) translateX(50px); opacity: 0; }
+  0% { transform: translateY(0px) translateX(0px); }
+  100% { transform: translateY(-150px) translateX(80px); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.8); }
+  50% { opacity: 0.6; transform: scale(1.2); }
 }
 
 /* 5. AI Typing Dots */

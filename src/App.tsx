@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import SetupWizard from './components/SetupWizard'
 import './App.css'
 
@@ -13,20 +13,36 @@ const InfoTooltip = ({ text }: { text: string }) => (
   </div>
 );
 
-const Particles = () => (
-  <div className="particles-container">
-    {[...Array(15)].map((_, i) => (
-      <div key={i} className="particle" style={{
+const Particles = React.memo(() => {
+  const particles = useMemo(() => {
+    return [...Array(40)].map((_, i) => {
+      const size = Math.random() * 4 + 2;
+      return {
+        id: i,
+        size,
         left: `${Math.random() * 100}%`,
         top: `${Math.random() * 100}%`,
-        width: `${Math.random() * 4 + 2}px`,
-        height: `${Math.random() * 4 + 2}px`,
-        animationDelay: `${Math.random() * 15}s`,
-        animationDuration: `${Math.random() * 10 + 10}s`
-      }}></div>
-    ))}
-  </div>
-);
+        delay: `-${Math.random() * 25}s, -${Math.random() * 6}s`,
+        duration: `${Math.random() * 15 + 15}s, ${Math.random() * 4 + 4}s`
+      };
+    });
+  }, []);
+
+  return (
+    <div className="particles-container">
+      {particles.map((p) => (
+        <div key={p.id} className="particle" style={{
+          left: p.left,
+          top: p.top,
+          width: `${p.size}px`,
+          height: `${p.size}px`,
+          animationDelay: p.delay,
+          animationDuration: p.duration
+        }}></div>
+      ))}
+    </div>
+  );
+});
 
 export const playPopSound = () => {
   try {
@@ -59,6 +75,10 @@ function App() {
   const [repoName, setRepoName] = useState('Git-Over-It');
   const [theme, setTheme] = useState('dark');
   const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    document.body.className = `theme-${theme}`;
+  }, [theme]);
 
   useEffect(() => {
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
@@ -206,10 +226,12 @@ function App() {
   }
 
   return (
-    <div className={`app-container theme-${theme} ${isPulsing ? 'pulse-success' : ''}`}>
+    <div className={`app-container ${isPulsing ? 'pulse-success' : ''}`}>
       <Particles />
       <div className="app-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border)', zIndex: 1 }}>
-        <h1 className="app-title" style={{ fontSize: '18px', margin: 0 }}>Git Over It</h1>
+        <h1 className="app-title" style={{ fontSize: '18px', margin: 0 }}>
+          Git Over It{userName ? `, ${userName}` : ''}
+        </h1>
         <div className="status-indicator">
           <div className="glow-dot"></div>
           <span>In Sync</span>
@@ -328,7 +350,7 @@ function App() {
               </select>
             </div>
             {folderStructure !== 'flat' && (
-              <div style={{ fontSize: '11px', color: '#e67e22', padding: '6px 8px', background: 'rgba(230, 126, 34, 0.1)', borderRadius: '6px', border: '1px solid rgba(230,126,34,0.2)' }}>
+              <div style={{ fontSize: '11px', color: 'var(--warning-text)', padding: '6px 8px', background: 'var(--warning-bg)', borderRadius: '6px', border: '1px solid var(--warning-border)' }}>
                 ⚠️ Existing folders on GitHub won't be moved!
               </div>
             )}
