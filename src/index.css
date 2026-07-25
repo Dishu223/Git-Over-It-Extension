@@ -366,3 +366,47 @@ a {
 a:hover {
   color: var(--text);
 }
+
+/* --- Contribution Graph Widget --- */
+.contribution-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.contribution-day {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 3px;
+  background-color: var(--level-0, rgba(255, 255, 255, 0.05));
+  transition: all 0.2s ease;
+}
+.contribution-day:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 5px var(--level-3);
+  z-index: 2;
+  position: relative;
+}
+
+/* Base (Dark Mode / Classic Green) */
+.contribution-graph-wrapper.classic-green, 
+.contribution-graph-wrapper {
+  --level-0: rgba(255, 255, 255, 0.05);
+  --level-1: #0e4429;
+  --level-2: #006d32;
+  --level-3: #26a641;
+  --level-4: #39d353;
+}
+
+/* Theme Synced (Cute Pink) */
+.contribution-graph-wrapper.theme-synced {
+  --level-0: rgba(194, 24, 91, 0.15);
+  --level-1: #f48fb1;
+  --level-2: #f06292;
+  --level-3: #e91e63;
+  --level-4: #c2185b;
+}
+
+.contribution-day.level-1 { background-color: var(--level-1); }
+.contribution-day.level-2 { background-color: var(--level-2); }
+.contribution-day.level-3 { background-color: var(--level-3); }
+.contribution-day.level-4 { background-color: var(--level-4); }

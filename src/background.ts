@@ -212,10 +212,19 @@ async function pushToGitHub(payload: any, tabId?: number) {
 
     if (allSuccess) {
       console.log("Git Over It: 🎉 Successfully pushed to GitHub!");
-      // Hook this up to the UI streak widget!
-      const stats = await chrome.storage.local.get(['pushedCount']);
+      // Update UI stats and Streak History!
+      const stats = await chrome.storage.local.get(['pushedCount', 'contributionHistory']);
       const count = ((stats.pushedCount as number) || 0) + 1;
-      await chrome.storage.local.set({ pushedCount: count });
+      
+      const history = (stats.contributionHistory || {}) as Record<string, number>;
+      const d = new Date();
+      const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      history[today] = (history[today] || 0) + 1;
+
+      await chrome.storage.local.set({ 
+        pushedCount: count,
+        contributionHistory: history
+      });
 
       // Notify the content script so it can show the LeetCode toast popup!
       if (tabId) {

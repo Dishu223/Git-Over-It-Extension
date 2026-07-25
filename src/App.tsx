@@ -61,6 +61,44 @@ export const playPopSound = () => {
   } catch(e) {}
 };
 
+const ContributionGraph = React.memo(({ history, syncTheme, theme }: { history: Record<string, number>, syncTheme: boolean, theme: string }) => {
+  const days = useMemo(() => {
+    const arr = [];
+    for (let i = 20; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const count = history[dateStr] || 0;
+      let level = 0;
+      if (count === 1) level = 1;
+      else if (count >= 2 && count <= 3) level = 2;
+      else if (count >= 4 && count <= 5) level = 3;
+      else if (count >= 6) level = 4;
+      arr.push({ date: dateStr, count, level });
+    }
+    return arr;
+  }, [history]);
+
+  const useThemeColors = syncTheme && theme === 'cute';
+
+  return (
+    <div className={`contribution-graph-wrapper ${useThemeColors ? 'theme-synced' : 'classic-green'}`}>
+      <div className="contribution-grid">
+        {days.map((day) => (
+          <div 
+            key={day.date} 
+            className={`contribution-day level-${day.level}`} 
+            title={`${day.date}: ${day.count} problems`} 
+          />
+        ))}
+      </div>
+      <div style={{ fontSize: '10px', color: 'var(--text-muted)', textAlign: 'right', marginTop: '6px', fontWeight: '500' }}>
+        Last 21 Days
+      </div>
+    </div>
+  );
+});
+
 function App() {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,6 +113,9 @@ function App() {
   const [repoName, setRepoName] = useState('Git-Over-It');
   const [theme, setTheme] = useState('dark');
   const [userName, setUserName] = useState('');
+  
+  const [contributionHistory, setContributionHistory] = useState<Record<string, number>>({});
+  const [chartThemeSync, setChartThemeSync] = useState(true);
 
   useEffect(() => {
     document.body.className = `theme-${theme}`;
@@ -82,7 +123,7 @@ function App() {
 
   useEffect(() => {
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['github_pat', 'pushedCount', 'showPopup', 'folderStructure', 'github_repo', 'theme', 'userName', 'soundEnabled'], (result: { [key: string]: any }) => {
+      chrome.storage.local.get(['github_pat', 'pushedCount', 'showPopup', 'folderStructure', 'github_repo', 'theme', 'userName', 'soundEnabled', 'contributionHistory', 'chartThemeSync'], (result: { [key: string]: any }) => {
         if (result.github_pat) setToken(result.github_pat);
         if (result.pushedCount) setPushedCount(result.pushedCount);
         if (result.showPopup !== undefined) setShowPopup(result.showPopup);
@@ -91,6 +132,8 @@ function App() {
         if (result.github_repo) setRepoName(result.github_repo);
         if (result.theme) setTheme(result.theme);
         if (result.userName) setUserName(result.userName);
+        if (result.contributionHistory) setContributionHistory(result.contributionHistory);
+        if (result.chartThemeSync !== undefined) setChartThemeSync(result.chartThemeSync);
         
         setIsLoading(false);
       });
@@ -160,11 +203,6 @@ function App() {
     saveSetting('userName', newValue);
   };
 
-  const changeTheme = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = e.target.value;
-    setTheme(newValue);
-    saveSetting('theme', newValue);
-  };
 
   const handleTilt = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
@@ -195,6 +233,26 @@ function App() {
     }
     return greeting;
   };
+
+  // Handle Dynamic Streak
+  const currentStreak = useMemo(() => {
+    let streak = 0;
+    const d = new Date();
+    let currentDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    
+    // Check if today has a contribution. If not, check if yesterday does to maintain an active streak
+    if (!contributionHistory[currentDate]) {
+      d.setDate(d.getDate() - 1);
+      currentDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    while (contributionHistory[currentDate]) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+      currentDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+    return streak;
+  }, [contributionHistory]);
 
   if (isLoading) {
     return (
@@ -264,12 +322,17 @@ function App() {
             <div className="stats-grid">
               <div className="stat-box glass-panel tilt-card" onMouseMove={handleTilt} onMouseLeave={handleTiltLeave}>
                 <span className="stat-label">Streak</span>
-                <span className="stat-value">🔥 0</span>
+                <span className="stat-value">🔥 {currentStreak}</span>
               </div>
               <div className="stat-box glass-panel tilt-card" onMouseMove={handleTilt} onMouseLeave={handleTiltLeave}>
                 <span className="stat-label">Pushed</span>
                 <span className="stat-value">🚀 {pushedCount}</span>
               </div>
+            </div>
+
+            <div className="glass-panel tilt-card" style={{ marginTop: '16px', padding: '16px' }} onMouseMove={handleTilt} onMouseLeave={handleTiltLeave}>
+              <h3 style={{ fontSize: '14px', marginBottom: '12px' }}>Activity</h3>
+              <ContributionGraph history={contributionHistory} syncTheme={chartThemeSync} theme={theme} />
             </div>
           </>
         ) : (
@@ -301,13 +364,32 @@ function App() {
             <div className="setting-item" style={{ marginBottom: '16px' }}>
               <div className="setting-info" style={{ display: 'flex', alignItems: 'center' }}>
                 <label>Theme</label>
-                <InfoTooltip text="Customize the UI aesthetics" />
+                <InfoTooltip text="Choose the visual aesthetic of the extension" />
               </div>
-              <select className="setting-select" value={theme} onChange={changeTheme}>
-                <option value="dark">Dark Mode</option>
+              <select className="setting-select" value={theme} onChange={(e) => {
+                setTheme(e.target.value);
+                chrome.storage.local.set({ theme: e.target.value });
+              }}>
+                <option value="dark">Pro Dark (Default)</option>
                 <option value="cute">Pastel Cute</option>
               </select>
             </div>
+
+            {theme === 'cute' && (
+              <div className="setting-item" style={{ marginBottom: '16px' }}>
+                <div className="setting-info" style={{ display: 'flex', alignItems: 'center' }}>
+                  <label>Sync Theme to Chart</label>
+                  <InfoTooltip text="Applies the cute pink shades to the Activity Chart instead of default green" />
+                </div>
+                <label className="switch">
+                  <input type="checkbox" checked={chartThemeSync} onChange={(e) => {
+                    setChartThemeSync(e.target.checked);
+                    chrome.storage.local.set({ chartThemeSync: e.target.checked });
+                  }} />
+                  <span className="slider round"></span>
+                </label>
+              </div>
+            )}
             
             <div className="setting-item" style={{ marginBottom: '16px' }}>
               <div className="setting-info" style={{ display: 'flex', alignItems: 'center' }}>
