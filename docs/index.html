@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Over It | Sync LeetCode to GitHub</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts: Space Grotesk & DM Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar glass-panel">
+        <div class="nav-container">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="logo-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+                <span>Git Over It</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="https://github.com/Dishu223/Git-Over-It-Extension" target="_blank" class="btn btn-secondary">GitHub</a>
+                <a href="#" class="btn btn-primary">Add to Chrome</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-bg-glow"></div>
+        <div class="container hero-content">
+            <div class="badge fade-up">v1.0 is Live 🚀</div>
+            <h1 class="hero-title fade-up delay-1">Stop Losing Your <br/><span class="highlight">LeetCode Progress.</span></h1>
+            <p class="hero-subtitle fade-up delay-2">
+                Git Over It silently runs in the background, automatically syncing your accepted LeetCode solutions directly to your GitHub repository with stunning AI-generated READMEs.
+            </p>
+            <div class="hero-cta fade-up delay-3">
+                <a href="#" class="btn btn-primary btn-large">
+                    <span>Install Extension</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </a>
+                <p class="hero-note">100% Free & Open Source</p>
+            </div>
+        </div>
+
+        <!-- 3D Mockup Container -->
+        <div class="mockup-container fade-up delay-4 tilt-card">
+            <div class="mockup-window glass-panel">
+                <div class="mockup-header">
+                    <div class="mockup-dots"><span></span><span></span><span></span></div>
+                    <div class="mockup-url">github.com/you/leetcode</div>
+                </div>
+                <div class="mockup-body">
+                    <div class="mockup-sidebar">
+                        <div class="folder">📁 Arrays</div>
+                        <div class="file">📄 0001-two-sum.cpp</div>
+                        <div class="folder">📁 Dynamic Programming</div>
+                        <div class="file active">📄 0070-climbing-stairs.py</div>
+                    </div>
+                    <div class="mockup-editor">
+                        <div class="editor-title">📝 0070-climbing-stairs.py</div>
+                        <div class="code-line"><span class="keyword">class</span> <span class="class-name">Solution</span>:</div>
+                        <div class="code-line indented"><span class="keyword">def</span> <span class="function">climbStairs</span>(<span class="keyword">self</span>, n: <span class="type">int</span>) -> <span class="type">int</span>:</div>
+                        <div class="code-line indented-2"><span class="keyword">if</span> n <= <span class="number">2</span>: <span class="keyword">return</span> n</div>
+                        <div class="code-line indented-2">a, b = <span class="number">1</span>, <span class="number">2</span></div>
+                        <div class="code-line indented-2"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="function">range</span>(<span class="number">3</span>, n + <span class="number">1</span>):</div>
+                        <div class="code-line indented-3">a, b = b, a + b</div>
+                        <div class="code-line indented-2"><span class="keyword">return</span> b</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Bento Grid Features -->
+    <section id="features" class="section">
+        <div class="container">
+            <div class="section-header fade-up">
+                <h2>Everything You Need. <span class="highlight">Zero Friction.</span></h2>
+                <p>Designed by developers, for developers. Git Over It builds a perfect portfolio without you lifting a finger.</p>
+            </div>
+
+            <div class="bento-grid">
+                <!-- Feature 1: Dynamic Folders -->
+                <div class="bento-card span-2 glass-panel tilt-card fade-up delay-1">
+                    <div class="card-icon">📁</div>
+                    <h3>Dynamic Folder Structuring</h3>
+                    <p>Code is automatically organized by algorithmic topics (Arrays, DP, Graphs) and nested by difficulty.</p>
+                    <div class="bento-visual tags-visual">
+                        <div class="visual-tag hard">Hard</div>
+                        <div class="visual-tag topic">Dynamic Programming</div>
+                        <div class="visual-tag lang">C++</div>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Streak Widget -->
+                <div class="bento-card span-1 glass-panel tilt-card fade-up delay-2">
+                    <div class="card-icon">🔥</div>
+                    <h3>Live Heatmap</h3>
+                    <p>Track your 21-day submission streak directly inside the Chrome Extension popup.</p>
+                    <div class="bento-visual heatmap-visual" id="heatmap-container">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+
+                <!-- Feature 3: AI README -->
+                <div class="bento-card span-1 glass-panel tilt-card fade-up delay-3">
+                    <div class="card-icon">🤖</div>
+                    <h3>AI-Powered READMEs</h3>
+                    <p>Beautiful markdown generated automatically with Big-O Complexity and your code snippet.</p>
+                </div>
+
+                <!-- Feature 4: Commit Messages -->
+                <div class="bento-card span-2 glass-panel tilt-card fade-up delay-4">
+                    <div class="card-icon">✍️</div>
+                    <h3>Professional Commits</h3>
+                    <p>No more "Updated file". Get standard commits like <code>feat(arrays): solved Two Sum</code>.</p>
+                    <div class="bento-visual commit-visual">
+                        <div class="commit-line"><span class="hash">c3d2061</span> feat(dp): solved Climbing Stairs [Accepted]</div>
+                        <div class="commit-line"><span class="hash">162cf5f</span> feat(arrays): solved Two Sum [Accepted]</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section fade-up">
+        <div class="container">
+            <div class="cta-card glass-panel tilt-card">
+                <h2>Ready to build your ultimate portfolio?</h2>
+                <p>Start syncing your LeetCode progress to GitHub today.</p>
+                <a href="#" class="btn btn-primary btn-large">Add to Chrome - It's Free</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24" class="logo-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+                <span>Git Over It</span>
+            </div>
+            <p>Made for developers. Open source under MIT License.</p>
+            <div class="footer-links">
+                <a href="https://github.com/Dishu223/Git-Over-It-Extension" target="_blank">GitHub Repository</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
