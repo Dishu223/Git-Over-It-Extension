@@ -73,5 +73,23 @@ The background script dynamically reads your preference from Chrome Local Storag
 
 ---
 
+## 🔥 Feature 5: The GitHub-Style Streak Widget
+*(Development Period: July 26)*
+
+Today was incredibly exciting! After setting up the scraper and AI features, I realized I wanted a way to visualize my consistency right from the extension. So, I built a sleek, 21-day horizontal heatmap that sits right in the Dashboard.
+
+The background worker now silently tracks the dates I successfully push code. I even added a cute pink pastel theme toggle for the chart because why stick to standard green all the time? Seeing that heatmap light up after solving a problem feels so rewarding.
+
+---
+
+## 🌐 Feature 6: The Landing Page Prototype
+*(Development Period: July 27)*
+
+I decided to take a break from the extension logic today and focus on building a beautiful landing page prototype for the project! I designed a "Developer Dark" theme with a Bento Grid layout using vanilla HTML, CSS, and JS so it runs blazingly fast. 
+
+It was so much fun putting together the UI and playing around with the 3D tilt effects for the feature cards. I can't wait to polish it even more and eventually deploy it!
+
+---
+
 ## 🔜 What's Next?
-Next up is **Phase 5: The Daily Streak Widget!** I want to add a GitHub-style contribution graph directly inside the extension popup so I can visualize my consistency.
+It's been such an amazing run building all this, and honestly, I'm super pumped to keep the momentum going! Tomorrow, I want to jump back into the codebase and start tackling some V2.0 features—maybe adding the One-Click Local Sandbox Export or even offline queueing. Time to catch some sleep first though. Catch you in the next update! ✌️
