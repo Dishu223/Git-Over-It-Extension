@@ -91,5 +91,34 @@ It was so much fun putting together the UI and playing around with the 3D tilt e
 
 ---
 
-## 🔜 What's Next?
-It's been such an amazing run building all this, and honestly, I'm super pumped to keep the momentum going! Tomorrow, I want to jump back into the codebase and start tackling some V2.0 features—maybe adding the One-Click Local Sandbox Export or even offline queueing. Time to catch some sleep first though. Catch you in the next update! ✌️
+## 🔜 What's Next? (QOL Updates V2.0)
+It's been such an amazing run building all this, and honestly, I'm super pumped to keep the momentum going! Here are the awesome new features I'll be implementing for V2.0:
+
+### 🤖 AI Alternative Solutions
+Instead of just analyzing your code, the AI Engine will suggest an optimal, secondary approach (e.g., O(N) if you wrote O(N^2)) right inside your generated README!
+
+### 📦 One-Click Local Sandbox Export
+A button in the extension popup that instantly packages your LeetCode problem, test cases, and a boilerplate setup into a downloadable `.zip` file so you can debug locally in VSCode!
+
+### 🔌 Offline Queueing
+No internet? No problem! The extension will cache your accepted solutions locally and automatically push them to GitHub the moment you reconnect.
+
+### 🎨 Customizable README Templates
+Not a fan of the default README look? You'll be able to choose from a variety of markdown themes (Minimalist, Detailed, Academic) to suit your repo's vibe.
+
+### 📈 Weekly Progress Reports
+Get a beautifully summarized email or local notification at the end of each week showing your total problems solved, most used topics, and streak consistency.
+
+### 🌓 Advanced Dark/Light Mode Sync
+The extension will intelligently sync with your OS preferences to ensure the dashboard always looks perfectly integrated.
+
+### 🔍 Search & Filter Submissions
+A mini-search bar inside the extension dashboard to quickly find past solutions by difficulty, language, or tags without having to browse GitHub.
+
+### 🎮 Gamified Achievements
+Unlock fun badges (e.g., "Dynamic Dynamo" or "Array Ace") as you solve problems and hit milestones. Learning should be fun!
+
+### 🚀 Performance Analytics
+A dedicated tab tracking your runtime/memory percentiles over time to see how much your algorithm efficiency is improving.
+
+Time to catch some sleep first though. Catch you in the next update! ✌️

@@ -222,21 +222,21 @@ function showSuccessToast(problemName: string, theme: string = 'dark') {
   toast.style.border = `1px solid ${borderColor}`;
   toast.style.color = textColor;
   
-  toast.innerHTML = \`
+  toast.innerHTML = `
     <div class="git-over-it-toast-content">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="\${accentColor}" stroke-width="2">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${accentColor}" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
       </svg>
       <div>
-        <h4 style="color: \${textColor} !important;">Git Over It</h4>
-        <p style="color: \${subtextColor} !important;">Successfully pushed <span class="problem-name-safe"></span> to GitHub!</p>
+        <h4 style="color: ${textColor} !important;">Git Over It</h4>
+        <p style="color: ${subtextColor} !important;">Successfully pushed <span class="problem-name-safe"></span> to GitHub!</p>
       </div>
-      <svg class="git-over-it-toast-close" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="\${subtextColor}" stroke-width="2">
+      <svg class="git-over-it-toast-close" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${subtextColor}" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </div>
-    <div class="git-over-it-progress-bar" style="background-color: \${accentColor} !important;"></div>
-  \`;
+    <div class="git-over-it-progress-bar" style="background-color: ${accentColor} !important;"></div>
+  `;
   
   const safeSpan = toast.querySelector('.problem-name-safe');
   if (safeSpan) safeSpan.textContent = problemName;
